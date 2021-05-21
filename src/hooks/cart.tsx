@@ -31,10 +31,10 @@ const CartProvider: React.FC = ({ children }) => {
   useEffect(() => {
     async function loadProducts(): Promise<void> {
       // TODO LOAD ITEMS FROM ASYNC STORAGE
-      const itemsInCart = await AsyncStorage.getItem('@gomarketplace:products');
+      const itemsInCart = await AsyncStorage.getItem('@GoMarketplace:products');
 
       if (itemsInCart) {
-        setProducts(JSON.parse(itemsInCart));
+        setProducts([...JSON.parse(itemsInCart)]);
       }
     }
 
@@ -44,24 +44,35 @@ const CartProvider: React.FC = ({ children }) => {
   const addToCart = useCallback(
     async (product: Product) => {
       // TODO ADD A NEW ITEM TO THE CART
-      const productIndex = products.findIndex(prod => prod.id === product.id);
+      const productExists = products.find(p => p.id === product.id);
+      let productsUpdated: Product[] = [];
 
-      if (productIndex > -1) {
-        // eslint-disable-next-line operator-assignment
-        products[productIndex].quantity = products[productIndex].quantity + 1;
-        setProducts([...products]);
+      if (productExists) {
+        productsUpdated = products.map(p =>
+          p.id === product.id ? { ...product, quantity: p.quantity + 1 } : p,
+        );
       } else {
-        const { id, image_url, price, title } = product;
-        setProducts([
-          ...products,
-          { id, image_url, price, quantity: 1, title },
-        ]);
+        productsUpdated = [...products, { ...product, quantity: 1 }];
       }
+      setProducts(productsUpdated);
+      // const productIndex = products.findIndex(prod => prod.id === product.id);
 
-      await AsyncStorage.removeItem('@marketplace:products');
+      // if (productIndex > -1) {
+      //   // eslint-disable-next-line operator-assignment
+      //   products[productIndex].quantity = products[productIndex].quantity + 1;
+      //   setProducts([...products]);
+      // } else {
+      //   const { id, image_url, price, title } = product;
+      //   setProducts([
+      //     ...products,
+      //     { id, image_url, price, quantity: 1, title },
+      //   ]);
+      // }
+
+      // await AsyncStorage.removeItem('@GoMarketplace:products');
       await AsyncStorage.setItem(
-        '@marketplace:products',
-        JSON.stringify([...products]),
+        '@GoMarketplace:products',
+        JSON.stringify(productsUpdated),
       );
     },
     [products],
@@ -80,9 +91,9 @@ const CartProvider: React.FC = ({ children }) => {
       });
 
       setProducts(productsIncremented);
-      await AsyncStorage.removeItem('@marketplace:products');
+      // await AsyncStorage.removeItem('@GoMarketplace:products');
       await AsyncStorage.setItem(
-        '@marketplace:products',
+        '@GoMarketplace:products',
         JSON.stringify([...productsIncremented]),
       );
     },
@@ -102,9 +113,9 @@ const CartProvider: React.FC = ({ children }) => {
       });
 
       setProducts(productsIncremented);
-      await AsyncStorage.removeItem('@marketplace:products');
+      // await AsyncStorage.removeItem('@GoMarketplace:products');
       await AsyncStorage.setItem(
-        '@marketplace:products',
+        '@GoMarketplace:products',
         JSON.stringify([...productsIncremented]),
       );
     },

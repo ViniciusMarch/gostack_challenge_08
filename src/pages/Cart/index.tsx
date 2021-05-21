@@ -23,6 +23,8 @@ import {
   SubtotalValue,
 } from './styles';
 
+import FloatingCart from '../../components/FloatingCart';
+
 import { useCart } from '../../hooks/cart';
 
 import formatValue from '../../utils/formatValue';
@@ -45,22 +47,6 @@ const Cart: React.FC = () => {
   function handleDecrement(id: string): void {
     decrement(id);
   }
-
-  const cartTotal = useMemo(() => {
-    // TODO RETURN THE SUM OF THE PRICE FROM ALL ITEMS IN THE CART
-    const totalPrice = products.reduce((total, currentProduct) => {
-      return total + currentProduct.price * currentProduct.quantity;
-    }, 0);
-    return formatValue(totalPrice);
-  }, [products]);
-
-  const totalItemsInCart = useMemo(() => {
-    // TODO RETURN THE SUM OF THE QUANTITY OF THE PRODUCTS IN THE CART
-    const totalItems = products.reduce((total, currentProduct) => {
-      return total + currentProduct.quantity;
-    }, 0);
-    return totalItems;
-  }, [products]);
 
   return (
     <Container>
@@ -109,11 +95,12 @@ const Cart: React.FC = () => {
           )}
         />
       </ProductContainer>
-      <TotalProductsContainer>
+      <FloatingCart />
+      {/* <TotalProductsContainer>
         <FeatherIcon name="shopping-cart" color="#fff" size={24} />
         <TotalProductsText>{`${totalItemsInCart} itens`}</TotalProductsText>
         <SubtotalValue>{cartTotal}</SubtotalValue>
-      </TotalProductsContainer>
+      </TotalProductsContainer> */}
     </Container>
   );
 };
